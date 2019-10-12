@@ -2,11 +2,11 @@
 To make a sample CVPR paper, copy the contents of this directory
 somewhere, and type
 
- latex egpaper_final
+ latex proposal
 
-or 
+or
 
- pdflatex egpaper_final
+ pdflatex proposal
 
 
 To make a copy with the review style (for anonymous review, and
