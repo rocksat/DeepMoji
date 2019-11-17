@@ -61,9 +61,8 @@ def main(args):
     # step 4: predict
     predict = loaded_model.predict(word_vec)
 
-    # display results
-    emoji = pd.read_csv(args.emoji_map, names=['ucode'], encoding='utf-8')
-    print(emoji[predict[0] - 1])
+    # display result
+    print("The emoji label is %d" % predict[0])
 
 
 if __name__ == '__main__':
