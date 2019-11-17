@@ -15,5 +15,5 @@ foo@bar:~$ python src/demo.py -m models/nb.pkl -d models/word_dictionary.json -e
 | Classifier  |  Accuracy |
 |-------------|-----------|
 | Naive Bayes |  13.815%  |
-| SVM         |   |
+| SVM         |  12.009%  |
 | DNN         |   |
