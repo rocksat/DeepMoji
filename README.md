@@ -1,14 +1,14 @@
 # DeepMoji
 CS229 course project deep learning model for analyzing sentiment, emotion, sarcasm etc
 
-### Training:
+### Train:
 ```console
-foo@bar:~$ python src/main.py -d data/dataset.txt -c nb -n 20000 -s models
+foo@bar:~$ python src/train.py -d data/dataset.txt -c nb -n 20000 -s models
 ```
 
-### Inference:
+### Predict:
 ```console
-foo@bar:~$ python src/demo.py -m models/nb.pkl -d models/word_dictionary.json -e data/emoji_map_1791.csv -s "I am happy"
+foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json -e data/emoji_map_1791.csv -s "I am happy"
 ```
 
 ### Accuracy
