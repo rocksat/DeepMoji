@@ -9,9 +9,11 @@
 # build-in library
 import numpy as np
 import argparse
-from torch.utils.data import DataLoader
+import pickle
+import os
 
 # customized library
+from util import write_json
 from TextDataset import TextDataset
 
 
@@ -35,12 +37,19 @@ def parse_args():
                         default='nb',
                         choices=['nb', 'svm', 'dnn'],
                         help='classifier type [nb, svm, dnn]')
+    parser.add_argument('--save_path',
+                        '-s',
+                        type=str,
+                        default='../models',
+                        help='path to save trained model and word dictionary')
     return parser.parse_args()
 
 
 def main(args):
     # step 1: load dataset
     dataset = TextDataset(args.dataset)
+    dictionary_file = os.path.join(args.save_path, 'word_dictionary.json')
+    write_json(dictionary_file, dataset.word_dictionary)
 
     # step 2: train / test split
     messages_train, messages_test = np.split(dataset.text_matrix,
@@ -52,20 +61,23 @@ def main(args):
     # step 2: load classifier
     if args.classifier == 'nb':
         from sklearn.naive_bayes import MultinomialNB
+        model_file = os.path.join(args.save_path, 'nb.pkl')
         clf = MultinomialNB()
     elif args.classifier == 'svm':
         from sklearn.svm import SVC
+        model_file = os.path.join(args.save_path, 'svm.pkl')
         clf = SVC(gamma='auto', max_iter=10000)
     else:
         NotImplementedError("DNN classifier is not implemented yet")
 
     # step 3: train classifier
     clf.fit(messages_train, labels_train)
+    pickle.dump(clf, open(model_file, 'wb'))
 
-    # step 3: evaluate classifier
-    prediction = clf.predict(messages_test)
-    accuracy = np.mean(prediction == labels_test)
-    print('%s classifier accuracy is %.3f%%' % (args.classifier, accuracy * 100))
+    # step 4: evaluate classifier
+    accuracy = clf.score(messages_test, labels_test)
+    print('%s classifier accuracy is %.3f%%' %
+          (args.classifier, accuracy * 100))
 
 
 if __name__ == '__main__':
