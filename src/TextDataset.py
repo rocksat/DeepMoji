@@ -22,8 +22,8 @@ def load_text_dataset(txt_file):
 
         for line in lines:
             message, label = line.split(':')
-            messages.append(message)
-            labels.append(label)
+            messages.append(message.strip())
+            labels.append(int(label.strip()))
 
     return messages, np.array(labels)
 
