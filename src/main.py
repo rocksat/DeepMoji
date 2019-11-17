@@ -65,7 +65,7 @@ def main(args):
     # step 3: evaluate classifier
     prediction = clf.predict(messages_test)
     accuracy = np.mean(prediction == labels_test)
-    print('%s classifier accuracy is %f' % (args.classifier, accuracy))
+    print('%s classifier accuracy is %.3f%%' % (args.classifier, accuracy * 100))
 
 
 if __name__ == '__main__':
