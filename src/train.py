@@ -11,10 +11,13 @@ import numpy as np
 import argparse
 import pickle
 import os
+import sklearn.model_selection as model_selection
 
 # customized library
 from util import write_json
 from TextDataset import TextDataset
+
+random_seed = 1
 
 
 def parse_args():
@@ -26,11 +29,11 @@ def parse_args():
                         type=str,
                         default='../data/dataset.txt',
                         help='dataset path')
-    parser.add_argument('--num_train',
-                        '-n',
-                        type=int,
-                        default=20000,
-                        help='number of samples for training')
+    parser.add_argument('--test_size',
+                        '-t',
+                        type=float,
+                        default=0.2,
+                        help='the proportion of the dataset in the test')
     parser.add_argument('--classifier',
                         '-c',
                         type=str,
@@ -52,11 +55,11 @@ def main(args):
     write_json(dictionary_file, dataset.word_dictionary)
 
     # step 2: train / test split
-    messages_train, messages_test = np.split(dataset.text_matrix,
-                                             [args.num_train],
-                                             axis=0)
-    labels_train, labels_test = np.split(dataset.labels, [args.num_train],
-                                         axis=0)
+    messages_train, messages_test, labels_train, labels_test = model_selection.train_test_split(
+        dataset.text_matrix,
+        dataset.labels,
+        test_size=args.test_size,
+        random_state=random_seed)
 
     # step 2: load classifier
     if args.classifier == 'nb':
