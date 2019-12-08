@@ -18,7 +18,7 @@ class TextDataset(Dataset):
         self.text_matrix = util.transform_text(self.messages,
                                                self.word_dictionary)
 
-    def filter(self, occurrence=100):
+    def filter(self, occurrence=500):
         sample_count = len(self.messages)
         labels_count = np.bincount(self.labels)
         select_masks = labels_count[self.labels] > occurrence
