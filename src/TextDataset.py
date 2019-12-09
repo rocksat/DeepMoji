@@ -6,7 +6,7 @@ import util
 
 
 class TextDataset(Dataset):
-    def __init__(self, txt_file, transform=None):
+    def __init__(self, txt_file):
         """
         Args:
             txt_file (string): Path to the text file with sentences and emoji labels
@@ -14,9 +14,6 @@ class TextDataset(Dataset):
         """
         self.messages, self.labels = util.load_text_dataset(txt_file)
         self.filter()
-        self.word_dictionary = util.create_dictionary(self.messages)
-        self.text_matrix = util.transform_text(self.messages,
-                                               self.word_dictionary)
 
     def filter(self, occurrence=500):
         sample_count = len(self.messages)
@@ -31,6 +28,6 @@ class TextDataset(Dataset):
         return len(self.messages)
 
     def __getitem__(self, idx):
-        message = self.text_matrix[idx, :]
+        message = self.messages[idx, :]
         label = self.labels[idx]
         return message, label

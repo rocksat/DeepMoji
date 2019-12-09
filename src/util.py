@@ -1,7 +1,5 @@
 import numpy as np
 import json
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
 
 
 def load_text_dataset(txt_file):
@@ -28,100 +26,21 @@ def load_text_dataset(txt_file):
     return messages, np.array(labels)
 
 
-def get_words(message):
-    """Get the normalized list of words from a message string.
+def transform_tfidf(text_matrix, use_idf=True):
+    """Transform a count matrix to a normalized tf or tf-idf representation"""
+    n, d = text_matrix.shape
+    text_tfidf_matrix = np.zeros((n, d))
 
-    This function should split a message into words, normalize them, and return
-    the resulting list. For splitting, you should split on spaces. For
-    normalization, you should convert everything to lowercase.
+    # compute tf
+    text_tf_matrix = text_matrix / (
+        np.sum(text_matrix, axis=1, keepdims=True) + np.finfo('d').eps)
 
-    Args:
-        message: A string containing an SMS message
+    # compute idf
+    idf = n / (np.sum(
+        (text_matrix > 0.5) * 1, axis=0, keepdims=True) + np.finfo('d').eps)
+    text_tfidf_matrix = text_tf_matrix * np.log(idf)
 
-    Returns:
-       The list of normalized words from the message.
-    """
-    words = message.strip().split()
-    norm_words = [word.lower() for word in words]
-    return norm_words
-
-
-def create_dictionary(messages):
-    """Create a dictionary mapping words to integer indices.
-
-    This function should create a dictionary of word to indices using the
-    provided training messages. Use get_words to process each message.
-
-    Rare words are often not useful for modeling. Please only add words to the
-    dictionary if they occur in at least five messages.
-
-    Args:
-        messages: A list of strings containing SMS messages
-
-    Returns:
-        A python dict mapping words to integers.
-    """
-    # count word frequency
-    stop_words = set(stopwords.words('english'))
-    ps = PorterStemmer()
-    word_frequency = {}
-    for message in messages:
-        words = get_words(message)
-        for word in words:
-            # word stemming
-            stem_word = ps.stem(word)
-            if not stem_word in stop_words:
-                if stem_word not in word_frequency:
-                    word_frequency[stem_word] = 1
-                else:
-                    word_frequency[stem_word] += 1
-
-    # build word dictionary
-    word_list = []
-    for index, (word, value) in enumerate(word_frequency.items()):
-        if value >= 5:
-            word_list.append(word)
-
-    word_list.sort()
-    return dict(zip(word_list, range(len(word_list))))
-
-
-def transform_text(messages, word_dictionary):
-    """Transform a list of text messages into a numpy array for further
-    processing.
-
-    This function should create a numpy array that contains the number of times
-    each word of the vocabulary appears in each message.
-    Each row in the resulting array should correspond to each message
-    and each column should correspond to a word of the vocabulary.
-
-    Use the provided word dictionary to map words to column indices. Ignore
-    words that are not present in the dictionary. Use get_words to get the
-    words for a message.
-
-    Args:
-        messages: A list of strings where each string is an SMS message.
-        word_dictionary: A python dict mapping words to integers.
-
-    Returns:
-        A numpy array marking the words present in each message.
-        Where the component (i,j) is the number of occurrences of the
-        j-th vocabulary word in the i-th message.
-    """
-    n = len(messages)
-    d = len(word_dictionary)
-    text_matrix = np.zeros((n, d))
-    ps = PorterStemmer()
-
-    # build text matrix
-    for index, message in enumerate(messages):
-        words = get_words(message)
-        for word in words:
-            stem_word = ps.stem(word)
-            if stem_word in word_dictionary:
-                text_matrix[index, word_dictionary[stem_word]] += 1
-
-    return text_matrix
+    return text_tfidf_matrix if use_idf else text_tf_matrix
 
 
 def write_json(filename, value):
