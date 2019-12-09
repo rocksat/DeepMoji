@@ -26,23 +26,6 @@ def load_text_dataset(txt_file):
     return messages, np.array(labels)
 
 
-def transform_tfidf(text_matrix, use_idf=True):
-    """Transform a count matrix to a normalized tf or tf-idf representation"""
-    n, d = text_matrix.shape
-    text_tfidf_matrix = np.zeros((n, d))
-
-    # compute tf
-    text_tf_matrix = text_matrix / (
-        np.sum(text_matrix, axis=1, keepdims=True) + np.finfo('d').eps)
-
-    # compute idf
-    idf = n / (np.sum(
-        (text_matrix > 0.5) * 1, axis=0, keepdims=True) + np.finfo('d').eps)
-    text_tfidf_matrix = text_tf_matrix * np.log(idf)
-
-    return text_tfidf_matrix if use_idf else text_tf_matrix
-
-
 def write_json(filename, value):
     """Write the provided value as JSON to the given filename"""
     with open(filename, 'w') as f:
@@ -61,3 +44,14 @@ def load_emoji(filename):
     # Load headers
     with open(filename, 'r', newline='') as csv_fh:
         headers = csv_fh.readline().strip().split(',')
+
+
+def load_glove_model(filename):
+    """load pretrained glove models"""
+    embeddings_index = {}
+    with open(filename, "rb") as lines:
+        for line in lines:
+            word, coefs = line.split(maxsplit=1)
+            coefs = np.fromstring(coefs, 'f', sep=' ')
+            embeddings_index[word] = coefs
+    return embeddings_index

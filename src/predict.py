@@ -13,8 +13,7 @@ import numpy as np
 import pickle
 import argparse
 import util
-import pandas as pd
-import emoji
+import EmbeddingVectorizer as ev
 
 
 def parse_args():
@@ -28,19 +27,22 @@ def parse_args():
     parser.add_argument('--model_file',
                         '-m',
                         type=str,
-                        required=True,
                         default='../models/nb.pkl',
                         help='path to save trained model')
     parser.add_argument('--dictionary_file',
                         '-d',
                         type=str,
-                        required=True,
-                        default='../models/word_dictionary.txt',
+                        default='../models/word_dictionary.json',
                         help='path to save word dictionary')
+    parser.add_argument('--word_embedding',
+                        '-w',
+                        type=str,
+                        default='bow',
+                        choices=['bow', 'glove', 'word2vec'],
+                        help='word embedding [bow, glove, word2vec]')
     parser.add_argument('--emoji_map',
                         '-e',
                         type=str,
-                        required=True,
                         default='../data/emoji_map_1791.csv',
                         help='path to emoji mapping file')
 
@@ -52,13 +54,18 @@ def main(args):
     # step 1: load model
     loaded_model = pickle.load(open(args.model_file, 'rb'))
 
-    # step 2: load word dictionary
-    word_dictionary = util.read_json(args.dictionary_file)
+    # step 2: word embedding
+    if args.word_embedding == 'bow':
+        word_dictionary = util.read_json(args.dictionary_file)
+        vectorizer = ev.CountVectorizer(use_tfidf=False)
+        vectorizer.load(word_dictionary)
+        word_vec = vectorizer.transform([args.sentence])
+    elif args.word_embedding == 'glove':
+        pass
+    else:
+        NotImplementedError("word2vec is not implemented yet")
 
-    # step 3: pass sentence into matrix
-    word_vec = util.transform_text([args.sentence], word_dictionary)
-
-    # step 4: predict
+    # step 3: predict
     predict = loaded_model.predict(word_vec)
 
     # display result

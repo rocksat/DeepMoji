@@ -14,7 +14,7 @@ import os
 import sklearn.model_selection as model_selection
 
 # customized library
-from util import write_json, transform_tfidf
+from util import write_json, load_glove_model
 from TextDataset import TextDataset
 import EmbeddingVectorizer as ev
 
@@ -69,19 +69,16 @@ def main(args):
 
     # step 3: word embedding
     if args.word_embedding == 'bow':
-        vectorizer = ev.CountVectorizer()
+        vectorizer = ev.CountVectorizer(use_tfidf=False)
         vectorizer.fit(dataset.messages)
+        dictionary_file = os.path.join(args.save_path, 'word_dictionary.json')
+        write_json(dictionary_file, vectorizer.word_dictionary)
 
     elif args.word_embedding == 'glove':
-        # load glove pre-trained model
+        # load pre-trained glove model
         glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.50d.txt')
-        embeddings_index = {}
-        with open(glove_6_b_50_d_path, "rb") as lines:
-            for line in lines:
-                word, coefs = line.split(maxsplit=1)
-                coefs = np.fromstring(coefs, 'f', sep=' ')
-                embeddings_index[word] = coefs
-        vectorizer = ev.MeanEmbeddingVectorizer(embeddings_index)
+        glove_model = load_glove_model(glove_6_b_50_d_path)
+        vectorizer = ev.MeanEmbeddingVectorizer(glove_model)
     else:
         NotImplementedError("word2vec is not implemented yet")
 

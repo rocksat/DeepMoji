@@ -6,10 +6,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 class CountVectorizer(object):
-    def __init__(self):
+    def __init__(self, use_tfidf=True):
         self.stop_words = set(stopwords.words('english'))
         self.ps = PorterStemmer()
         self.word_dictionary = {}
+        self.use_tfidf = use_tfidf
+
+    def load(self, word_dictionary):
+        self.word_dictionary = word_dictionary
 
     def get_words(self, message):
         """Get the normalized list of words from a message string.
@@ -71,6 +75,23 @@ class CountVectorizer(object):
         word_list.sort()
         self.word_dictionary = dict(zip(word_list, range(len(word_list))))
 
+    @staticmethod
+    def transform_tfidf(text_matrix):
+        """Transform a count matrix to a normalized tf or tf-idf representation"""
+        n, d = text_matrix.shape
+        text_tfidf_matrix = np.zeros((n, d))
+
+        # compute tf
+        text_tf_matrix = text_matrix / (
+            np.sum(text_matrix, axis=1, keepdims=True) + np.finfo('d').eps)
+
+        # compute idf
+        idf = n / (np.sum((text_matrix > 0.5) * 1, axis=0, keepdims=True) +
+                   np.finfo('d').eps)
+        text_tfidf_matrix = text_tf_matrix * np.log(idf)
+
+        return text_tfidf_matrix
+
     def transform(self, messages):
         """Transform a list of text messages into a numpy array for further
         processing.
@@ -103,6 +124,9 @@ class CountVectorizer(object):
             for word in words:
                 if word in self.word_dictionary:
                     text_matrix[index, self.word_dictionary[word]] += 1
+
+        if self.use_tfidf:
+            text_matrix = self.transform_tfidf(text_matrix)
 
         return text_matrix
 

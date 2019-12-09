@@ -132,3 +132,6 @@ dmypy.json
 # pycharm IDE
 .idea/*
 .vscode/*
+
+# models
+models/*
