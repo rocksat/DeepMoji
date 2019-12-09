@@ -12,8 +12,13 @@ foo@bar:~$ python -m nltk.downloader all
 ```
 
 ### Train:
+##### train Naive Bayes classifier with BoW + TF-IDF word embedding
 ```console
-foo@bar:~$ python src/train.py -d data/dataset.txt -c nb -n 20000 -s models
+foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c nb -w bow -s models
+```
+##### train SVM classifier with BoW + GLoVe-50d word embedding
+```console
+foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -s models
 ```
 
 ### Predict:
