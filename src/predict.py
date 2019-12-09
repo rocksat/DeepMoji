@@ -57,7 +57,7 @@ def main(args):
     # step 2: word embedding
     if args.word_embedding == 'bow':
         word_dictionary = util.read_json(args.dictionary_file)
-        vectorizer = ev.CountVectorizer(use_tfidf=False)
+        vectorizer = ev.CountVectorizer(use_tfidf=True)
         vectorizer.load(word_dictionary)
         word_vec = vectorizer.transform([args.sentence])
     elif args.word_embedding == 'glove':

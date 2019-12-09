@@ -12,8 +12,8 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 ```
 
 ### Accuracy
-| Classifier  |  Accuracy |
-|-------------|-----------|
-| Naive Bayes |  13.815%  |
-| SVM         |  12.009%  |
-| DNN         |   |
+|             |  Bag of Word |  GLoVe-50d  | GLoVe-300d  |
+|-------------|--------------|-------------|-------------|
+| Naive Bayes |  16.713%     |     N/A     |   N/A       |
+| SVM         |  14.680%     | 15.048%     | 14.873%     |
+| LSTM        |              |             |             |

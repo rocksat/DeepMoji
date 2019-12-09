@@ -52,6 +52,7 @@ def load_glove_model(filename):
     with open(filename, "rb") as lines:
         for line in lines:
             word, coefs = line.split(maxsplit=1)
+            word = word.decode("utf-8")
             coefs = np.fromstring(coefs, 'f', sep=' ')
             embeddings_index[word] = coefs
     return embeddings_index

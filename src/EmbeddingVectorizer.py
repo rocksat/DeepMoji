@@ -1,45 +1,46 @@
 from collections import defaultdict
 import numpy as np
-from nltk.corpus import stopwords
+
 from nltk.stem import PorterStemmer
 from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+
+stop_words = set(stopwords.words('english'))
+ps = PorterStemmer()
+
+
+def get_words(message):
+    """Get the normalized list of words from a message string.
+
+    This function should split a message into words, normalize them, and return
+    the resulting list. For splitting, you should split on spaces. For
+    normalization, you should convert everything to lowercase.
+
+    Args:
+        message: A string containing an SMS message
+
+    Returns:
+       The list of normalized words from the message.
+    """
+    words = message.strip().split()
+    norm_words = [word.lower() for word in words]
+
+    # apply stop words
+    nonstop_words = [word for word in norm_words if not word in stop_words]
+
+    # apply stemming
+    stem_words = [ps.stem(word) for word in nonstop_words]
+
+    return stem_words
 
 
 class CountVectorizer(object):
     def __init__(self, use_tfidf=True):
-        self.stop_words = set(stopwords.words('english'))
-        self.ps = PorterStemmer()
         self.word_dictionary = {}
         self.use_tfidf = use_tfidf
 
     def load(self, word_dictionary):
         self.word_dictionary = word_dictionary
-
-    def get_words(self, message):
-        """Get the normalized list of words from a message string.
-
-        This function should split a message into words, normalize them, and return
-        the resulting list. For splitting, you should split on spaces. For
-        normalization, you should convert everything to lowercase.
-
-        Args:
-            message: A string containing an SMS message
-
-        Returns:
-           The list of normalized words from the message.
-        """
-        words = message.strip().split()
-        norm_words = [word.lower() for word in words]
-
-        # apply stop words
-        nonstop_words = [
-            word for word in norm_words if not word in self.stop_words
-        ]
-
-        # apply stemming
-        stem_words = [self.ps.stem(word) for word in nonstop_words]
-
-        return stem_words
 
     def fit(self, messages, y=None):
         """Create a dictionary mapping words to integer indices.
@@ -59,7 +60,7 @@ class CountVectorizer(object):
         # count word frequency
         word_frequency = {}
         for message in messages:
-            words = self.get_words(message)
+            words = get_words(message)
             for word in words:
                 if word not in word_frequency:
                     word_frequency[word] = 1
@@ -120,7 +121,7 @@ class CountVectorizer(object):
 
         # build text matrix
         for index, message in enumerate(messages):
-            words = self.get_words(message)
+            words = get_words(message)
             for word in words:
                 if word in self.word_dictionary:
                     text_matrix[index, self.word_dictionary[word]] += 1
@@ -148,8 +149,10 @@ class MeanEmbeddingVectorizer(object):
 
     def transform(self, X):
         return np.array([
-            np.mean([self.word2vec[w] for w in words if w in self.word2vec]
-                    or [np.zeros(self.dim)],
+            np.mean([
+                self.word2vec[w]
+                for w in get_words(words) if w in self.word2vec
+            ] or [np.zeros(self.dim)],
                     axis=0) for words in X
         ])
 
@@ -158,13 +161,41 @@ class TfidfEmbeddingVectorizer(object):
     def __init__(self, word2vec):
         self.word2vec = word2vec
         self.word2weight = None
+        self.stop_words = set(stopwords.words('english'))
+        self.ps = PorterStemmer()
         if len(word2vec) > 0:
             self.dim = len(word2vec[next(iter(word2vec))])
         else:
             self.dim = 0
 
+    def get_words(self, message):
+        """Get the normalized list of words from a message string.
+
+        This function should split a message into words, normalize them, and return
+        the resulting list. For splitting, you should split on spaces. For
+        normalization, you should convert everything to lowercase.
+
+        Args:
+            message: A string containing an SMS message
+
+        Returns:
+           The list of normalized words from the message.
+        """
+        words = message.strip().split()
+        norm_words = [word.lower() for word in words]
+
+        # apply stop words
+        nonstop_words = [
+            word for word in norm_words if not word in self.stop_words
+        ]
+
+        # apply stemming
+        stem_words = [self.ps.stem(word) for word in nonstop_words]
+
+        return stem_words
+
     def fit(self, X, y):
-        tfidf = TfidfVectorizer(analyzer=lambda x: x)
+        tfidf = TfidfVectorizer()
         tfidf.fit(X)
         # if a word was never seen - it must be at least as infrequent
         # as any of the known words - so the default idf is the max of
@@ -180,7 +211,7 @@ class TfidfEmbeddingVectorizer(object):
         return np.array([
             np.mean([
                 self.word2vec[w] * self.word2weight[w]
-                for w in words if w in self.word2vec
+                for w in get_words(words) if w in self.word2vec
             ] or [np.zeros(self.dim)],
                     axis=0) for words in X
         ])

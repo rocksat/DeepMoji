@@ -12,6 +12,7 @@ import argparse
 import pickle
 import os
 import sklearn.model_selection as model_selection
+from sklearn.ensemble import BaggingClassifier
 
 # customized library
 from util import write_json, load_glove_model
@@ -69,42 +70,45 @@ def main(args):
 
     # step 3: word embedding
     if args.word_embedding == 'bow':
-        vectorizer = ev.CountVectorizer(use_tfidf=False)
+        vectorizer = ev.CountVectorizer(use_tfidf=True)
         vectorizer.fit(dataset.messages)
         dictionary_file = os.path.join(args.save_path, 'word_dictionary.json')
         write_json(dictionary_file, vectorizer.word_dictionary)
-
     elif args.word_embedding == 'glove':
         # load pre-trained glove model
-        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.50d.txt')
+        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.5d.txt')
         glove_model = load_glove_model(glove_6_b_50_d_path)
         vectorizer = ev.MeanEmbeddingVectorizer(glove_model)
-    else:
-        NotImplementedError("word2vec is not implemented yet")
 
     X_train = vectorizer.transform(messages_train)
     X_test = vectorizer.transform(messages_test)
 
-    # step 4: load classifier
+    # step 4: train classifier
+    n_estimators = 10
     if args.classifier == 'nb':
         from sklearn.naive_bayes import MultinomialNB
-        model_file = os.path.join(args.save_path, 'nb.pkl')
-        clf = MultinomialNB()
+        clf = BaggingClassifier(MultinomialNB(),
+                                max_samples=1.0 / n_estimators,
+                                n_estimators=n_estimators,
+                                n_jobs=-1,
+                                verbose=True)
     elif args.classifier == 'svm':
-        from sklearn.linear_model import SGDClassifier
-        model_file = os.path.join(args.save_path, 'svm.pkl')
-        clf = SGDClassifier(loss='hinge',
-                            penalty='l2',
-                            alpha=1e-3,
-                            random_state=random_state)
+        from sklearn.svm import SVC
+        clf = BaggingClassifier(SVC(gamma='auto'),
+                                max_samples=1.0 / n_estimators,
+                                n_estimators=n_estimators,
+                                n_jobs=-1,
+                                verbose=True)
     else:
         NotImplementedError("DNN classifier is not implemented yet")
 
-    # step 3: train classifier
     clf.fit(X_train, labels_train)
+    model_file = os.path.join(
+        args.save_path, '{}_{}.pkl'.format(args.word_embedding,
+                                           args.classifier))
     pickle.dump(clf, open(model_file, 'wb'))
 
-    # step 4: evaluate classifier
+    # step 5: evaluate on testset
     accuracy = clf.score(X_test, labels_test)
     print('%s classifier accuracy is %.3f%%' %
           (args.classifier, accuracy * 100))
