@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from nltk.corpus import stopwords
 
 
 def load_text_dataset(txt_file):
@@ -60,14 +61,16 @@ def create_dictionary(messages):
         A python dict mapping words to integers.
     """
     # count word frequency
+    stop_words = set(stopwords.words('english'))
     word_frequency = {}
     for message in messages:
         words = get_words(message)
         for word in words:
-            if word not in word_frequency:
-                word_frequency[word] = 1
-            else:
-                word_frequency[word] += 1
+            if not word in stop_words:
+                if word not in word_frequency:
+                    word_frequency[word] = 1
+                else:
+                    word_frequency[word] += 1
 
     # build word dictionary
     word_list = []
