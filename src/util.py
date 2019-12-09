@@ -1,6 +1,7 @@
 import numpy as np
 import json
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
 
 def load_text_dataset(txt_file):
@@ -62,15 +63,18 @@ def create_dictionary(messages):
     """
     # count word frequency
     stop_words = set(stopwords.words('english'))
+    ps = PorterStemmer()
     word_frequency = {}
     for message in messages:
         words = get_words(message)
         for word in words:
-            if not word in stop_words:
-                if word not in word_frequency:
-                    word_frequency[word] = 1
+            # word stemming
+            stem_word = ps.stem(word)
+            if not stem_word in stop_words:
+                if stem_word not in word_frequency:
+                    word_frequency[stem_word] = 1
                 else:
-                    word_frequency[word] += 1
+                    word_frequency[stem_word] += 1
 
     # build word dictionary
     word_list = []
@@ -107,13 +111,15 @@ def transform_text(messages, word_dictionary):
     n = len(messages)
     d = len(word_dictionary)
     text_matrix = np.zeros((n, d))
+    ps = PorterStemmer()
 
     # build text matrix
     for index, message in enumerate(messages):
         words = get_words(message)
         for word in words:
-            if word in word_dictionary:
-                text_matrix[index, word_dictionary[word]] += 1
+            stem_word = ps.stem(word)
+            if stem_word in word_dictionary:
+                text_matrix[index, word_dictionary[stem_word]] += 1
 
     return text_matrix
 
