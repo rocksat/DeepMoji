@@ -17,6 +17,7 @@ from keras.initializers import Constant
 class CNNClassifier(object):
     def __init__(self,
                  messages,
+                 labels,
                  word_embedding,
                  max_sequence_length=1000,
                  max_num_words=20000,
@@ -60,7 +61,7 @@ class CNNClassifier(object):
                            optimizer='rmsprop',
                            metrics=['acc'])
 
-    def data_preproccess(self, messages):
+    def data_preproccess(self, messages, labels):
         pass
 
     def fit(self, X, y):
