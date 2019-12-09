@@ -1,6 +1,11 @@
 # DeepMoji
 CS229 course project deep learning model for analyzing sentiment, emotion, sarcasm etc
 
+### Download GLoVe Pre-trained model
+```console
+foo@bar:~$ bash models/download_glove.sh
+```
+
 ### Train:
 ```console
 foo@bar:~$ python src/train.py -d data/dataset.txt -c nb -n 20000 -s models
