@@ -13,6 +13,7 @@ import pickle
 import os
 import sklearn.model_selection as model_selection
 from sklearn.ensemble import BaggingClassifier
+from sklearn.preprocessing import LabelEncoder
 
 # customized library
 from util import write_json, load_glove_model
@@ -76,15 +77,20 @@ def main(args):
         write_json(dictionary_file, vectorizer.word_dictionary)
     elif args.word_embedding == 'glove':
         # load pre-trained glove model
-        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.5d.txt')
+        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.50d.txt')
         glove_model = load_glove_model(glove_6_b_50_d_path)
         vectorizer = ev.MeanEmbeddingVectorizer(glove_model)
+    # encoder labels
+    le = LabelEncoder()
+    le.fit(dataset.labels)
 
     X_train = vectorizer.transform(messages_train)
     X_test = vectorizer.transform(messages_test)
+    y_train = le.transform(labels_train)
+    y_test = le.transform(labels_test)
 
     # step 4: train classifier
-    n_estimators = 10
+    n_estimators = 5
     if args.classifier == 'nb':
         from sklearn.naive_bayes import MultinomialNB
         clf = BaggingClassifier(MultinomialNB(),
@@ -100,16 +106,17 @@ def main(args):
                                 n_jobs=-1,
                                 verbose=True)
     else:
-        NotImplementedError("DNN classifier is not implemented yet")
+        from CNNClassifier import CNNClassifier
+        clf = CNNClassifier()
 
-    clf.fit(X_train, labels_train)
+    clf.fit(X_train, y_train)
     model_file = os.path.join(
         args.save_path, '{}_{}.pkl'.format(args.word_embedding,
                                            args.classifier))
     pickle.dump(clf, open(model_file, 'wb'))
 
     # step 5: evaluate on testset
-    accuracy = clf.score(X_test, labels_test)
+    accuracy = clf.score(X_test, y_test)
     print('%s classifier accuracy is %.3f%%' %
           (args.classifier, accuracy * 100))
 

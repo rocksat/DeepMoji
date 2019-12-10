@@ -168,32 +168,6 @@ class TfidfEmbeddingVectorizer(object):
         else:
             self.dim = 0
 
-    def get_words(self, message):
-        """Get the normalized list of words from a message string.
-
-        This function should split a message into words, normalize them, and return
-        the resulting list. For splitting, you should split on spaces. For
-        normalization, you should convert everything to lowercase.
-
-        Args:
-            message: A string containing an SMS message
-
-        Returns:
-           The list of normalized words from the message.
-        """
-        words = message.strip().split()
-        norm_words = [word.lower() for word in words]
-
-        # apply stop words
-        nonstop_words = [
-            word for word in norm_words if not word in self.stop_words
-        ]
-
-        # apply stemming
-        stem_words = [self.ps.stem(word) for word in nonstop_words]
-
-        return stem_words
-
     def fit(self, X, y):
         tfidf = TfidfVectorizer()
         tfidf.fit(X)
