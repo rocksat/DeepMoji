@@ -108,8 +108,7 @@ def main(args):
                                 n_jobs=-1,
                                 verbose=False)
     else:
-        from CNNClassifier import CNNClassifier
-        clf = CNNClassifier()
+        NotImplementedError('not implemented yet')
 
     clf.fit(X_train, y_train)
     model_file = os.path.join(

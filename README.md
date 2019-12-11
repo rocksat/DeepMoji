@@ -16,9 +16,13 @@ foo@bar:~$ python -m nltk.downloader all
 ```console
 foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c nb -w bow -s models
 ```
-- train SVM classifier with BoW + GLoVe-50d word embedding
+- train SVM classifier with GLoVe-50d word embedding
 ```console
 foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -s models
+```
+- train deep CNN classifier with GLoVe-50d word embedding
+```console
+foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c cnn -w glove-50 -s models
 ```
 
 ### Predict:
@@ -31,11 +35,11 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 |-----------------|---------------|-------------|-------------|-------------|
 | Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
 | SVM             |  8.255%       | 14.295%     | 12.886%     |
-| CNN             |               |             |             |
+| CNN             |               | 17.205%     |             |
 | GRU             |               |             |             |
 | GRU + Attention |               |             |             |
 
 
 ### To-do List
 - [X] textCNN with pre-trained GLoVe
-- [ ] textCNN with pre-trained BERT
+- [X] textCNN with pre-trained BERT
