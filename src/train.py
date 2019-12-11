@@ -14,6 +14,8 @@ import os
 import sklearn.model_selection as model_selection
 from sklearn.ensemble import BaggingClassifier
 from sklearn.preprocessing import LabelEncoder
+from sklearn.metrics import plot_confusion_matrix
+from matplotlib import pyplot as plt
 
 # customized library
 from util import write_json, load_glove_model
@@ -115,12 +117,26 @@ def main(args):
                                            args.classifier))
     pickle.dump(clf, open(model_file, 'wb'))
 
-    # step 5: evaluate on testset
+    # step 5: evaluate on test set
     eval_set = {'train_set': (X_train, y_train), 'test_set': (X_test, y_test)}
     for t, (X, y) in eval_set.items():
         accuracy = clf.score(X, y)
         print('%s classifier accuracy on %s is %.3f%%' %
               (args.classifier, t, accuracy * 100))
+
+    # step 6: plot confusion matrix
+    disp = plot_confusion_matrix(clf,
+                                 X_test,
+                                 y_test,
+                                 display_labels=le.classes_,
+                                 include_values=False,
+                                 cmap=plt.get_cmap('Blues'),
+                                 normalize='true')
+    disp.ax_.set_title('Emoji classification confusion matrix')
+    figure_file = os.path.join(
+        args.save_path, '{}_{}.png'.format(args.word_embedding,
+                                           args.classifier))
+    plt.savefig(figure_file)
 
 
 if __name__ == '__main__':
