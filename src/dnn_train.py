@@ -10,8 +10,10 @@
 import numpy as np
 import argparse
 import os
+import pandas as pd
+import seaborn as sn
 import sklearn.model_selection as model_selection
-from sklearn.metrics import plot_confusion_matrix
+from sklearn.metrics import confusion_matrix
 from matplotlib import pyplot as plt
 
 # customized library
@@ -72,7 +74,7 @@ def main(args):
                                            'pretrain_models/glove.6B.50d.txt')
         word_embedding = load_glove_model(glove_6_b_50_d_path)
         embedding_dim = 50
-    elif args.word_embedding == 'glove3-00':
+    elif args.word_embedding == 'glove-300':
         glove_6_b_300_d_path = os.path.join(
             args.out_path, 'pretrain_models/glove.6B.300d.txt')
         word_embedding = load_glove_model(glove_6_b_300_d_path)
@@ -93,7 +95,7 @@ def main(args):
         NotImplementedError('not implemented yet')
 
     X_train, y_train = clf.data_preproccess(messages_train, labels_train)
-    clf.fit(X_train, y_train, epochs=1)
+    clf.fit(X_train, y_train, epochs=10)
     model_file = os.path.join(
         args.out_path, 'models/{}_{}.pkl'.format(args.word_embedding,
                                                  args.classifier))
@@ -105,6 +107,23 @@ def main(args):
     print("%s classifier %s on %s is : %.3f%%" %
           (args.classifier, clf.model.metrics_names[1], args.word_embedding,
            scores[1] * 100))
+
+    # step 6: draw confusion matrix
+    y_pred = clf.predict(X_test)
+    cm = confusion_matrix(np.argmax(y_test, axis=1),
+                          np.argmax(y_pred, axis=1),
+                          normalize='true')
+    df_cm = pd.DataFrame(cm,
+                         index=[i for i in clf.le.classes_],
+                         columns=[i for i in clf.le.classes_])
+    plt.figure(figsize=(10, 7))
+    plt.title('{}_{} confusion matrix'.format(args.word_embedding,
+                                              args.classifier))
+    sn.heatmap(df_cm, annot=False, cmap=plt.get_cmap('Blues'))
+    figure_file = os.path.join(
+        args.out_path, 'figure/{} {}.png'.format(args.word_embedding,
+                                                 args.classifier))
+    plt.savefig(figure_file)
 
 
 if __name__ == '__main__':

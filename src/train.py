@@ -125,6 +125,7 @@ def main(args):
               (args.classifier, t, accuracy * 100))
 
     # step 6: plot confusion matrix
+    plt.figure(figsize=(10, 7))
     disp = plot_confusion_matrix(clf,
                                  X_test,
                                  y_test,
@@ -132,7 +133,7 @@ def main(args):
                                  include_values=False,
                                  cmap=plt.get_cmap('Blues'),
                                  normalize='true')
-    disp.ax_.set_title('{}_{} confusion matrix'.format(args.word_embedding,
+    disp.ax_.set_title('{} {} confusion matrix'.format(args.word_embedding,
                                                        args.classifier))
     figure_file = os.path.join(
         args.out_path, 'figure/{}_{}.png'.format(args.word_embedding,

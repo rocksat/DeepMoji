@@ -86,6 +86,10 @@ class CNNClassifier(object):
                        epochs=epochs,
                        validation_data=(x_val, y_val))
 
+    def predict(self, X):
+        y_pred = self.model.predict(X)
+        return y_pred
+
     def score(self, X, y):
         scores = self.model.evaluate(X, y, batch_size=128, verbose=0)
         return scores
