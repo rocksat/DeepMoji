@@ -97,14 +97,14 @@ def main(args):
                                 max_samples=1.0 / n_estimators,
                                 n_estimators=n_estimators,
                                 n_jobs=-1,
-                                verbose=True)
+                                verbose=False)
     elif args.classifier == 'svm':
         from sklearn.svm import SVC
         clf = BaggingClassifier(SVC(gamma='auto'),
                                 max_samples=1.0 / n_estimators,
                                 n_estimators=n_estimators,
                                 n_jobs=-1,
-                                verbose=True)
+                                verbose=False)
     else:
         from CNNClassifier import CNNClassifier
         clf = CNNClassifier()
@@ -116,9 +116,11 @@ def main(args):
     pickle.dump(clf, open(model_file, 'wb'))
 
     # step 5: evaluate on testset
-    accuracy = clf.score(X_test, y_test)
-    print('%s classifier accuracy is %.3f%%' %
-          (args.classifier, accuracy * 100))
+    eval_set = {'train_set': (X_train, y_train), 'test_set': (X_test, y_test)}
+    for t, (X, y) in eval_set.items():
+        accuracy = clf.score(X, y)
+        print('%s classifier accuracy on %s is %.3f%%' %
+              (args.classifier, t, accuracy * 100))
 
 
 if __name__ == '__main__':
