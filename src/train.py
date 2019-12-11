@@ -62,7 +62,7 @@ def parse_args():
 
 def main(args):
     # step 1: load dataset
-    dataset = TextDataset(args.dataset, max_messages=50000)
+    dataset = TextDataset(args.dataset, occurrence=1000, top_k_stop_emoji=30)
 
     # step 2: train / test split
     messages_train, messages_test, labels_train, labels_test = model_selection.train_test_split(
@@ -132,7 +132,8 @@ def main(args):
                                  include_values=False,
                                  cmap=plt.get_cmap('Blues'),
                                  normalize='true')
-    disp.ax_.set_title('Emoji classification confusion matrix')
+    disp.ax_.set_title('{}_{} confusion matrix'.format(args.word_embedding,
+                                                       args.classifier))
     figure_file = os.path.join(
         args.save_path, '{}_{}.png'.format(args.word_embedding,
                                            args.classifier))
