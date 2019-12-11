@@ -29,13 +29,13 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 ### Accuracy
 |  Word Embedding |  BoW + TF-IDF |  GLoVe-50d  | GLoVe-300d  |     BERT    |
 |-----------------|---------------|-------------|-------------|-------------|
-| Naive Bayes     |  16.713%      |     N/A     |   N/A       |     N/A     |
-| SVM             |  14.680%      | 15.048%     | 14.873%     |
+| Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
+| SVM             |  8.255%       | 14.295%     | 12.886%     |
 | CNN             |               |             |             |
 | GRU             |               |             |             |
 | GRU + Attention |               |             |             |
 
 
 ### To-do List
-- [ ] textCNN with pre-trained GLoVe
+- [X] textCNN with pre-trained GLoVe
 - [ ] textCNN with pre-trained BERT
