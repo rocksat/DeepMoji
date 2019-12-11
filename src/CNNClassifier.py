@@ -12,6 +12,7 @@ from keras.layers import Dense, Input, GlobalMaxPooling1D
 from keras.layers import Conv1D, MaxPooling1D, Embedding
 from keras.models import Model
 from keras.initializers import Constant
+from keras.models import load_model
 from sklearn.preprocessing import LabelEncoder
 
 
@@ -71,7 +72,7 @@ class CNNClassifier(object):
         labels = to_categorical(self.le.transform(labels))
         return data, labels
 
-    def fit(self, X, y, validation_split=0.1):
+    def fit(self, X, y, epochs=10, validation_split=0.1):
         # split data into a training set and a validation set
         num_validation_samples = int(validation_split * X.shape[0])
         x_train = X[:-num_validation_samples]
@@ -82,8 +83,15 @@ class CNNClassifier(object):
         self.model.fit(x_train,
                        y_train,
                        batch_size=128,
-                       epochs=10,
+                       epochs=epochs,
                        validation_data=(x_val, y_val))
 
     def score(self, X, y):
-        self.model.evaluate(X, y, batch_size=128)
+        scores = self.model.evaluate(X, y, batch_size=128, verbose=0)
+        return scores
+
+    def save(self, filename):
+        self.model.save(filename)
+
+    def load(self, filename):
+        self.model = load_model(filename)

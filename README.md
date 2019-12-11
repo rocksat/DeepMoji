@@ -14,15 +14,15 @@ foo@bar:~$ python -m nltk.downloader all
 ### Train:
 - train Naive Bayes classifier with BoW + TF-IDF word embedding
 ```console
-foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c nb -w bow -s models
+foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c nb -w bow -o artifact
 ```
 - train SVM classifier with GLoVe-50d word embedding
 ```console
-foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -s models
+foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -o artifact
 ```
 - train deep CNN classifier with GLoVe-50d word embedding
 ```console
-foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c cnn -w glove-50 -s models
+foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c cnn -w glove-50 -o artifact
 ```
 
 ### Predict:
@@ -34,8 +34,8 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 |  Word Embedding |  BoW + TF-IDF |  GLoVe-50d  | GLoVe-300d  |     BERT    |
 |-----------------|---------------|-------------|-------------|-------------|
 | Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
-| SVM             |  8.255%       | 14.295%     | 12.886%     |
-| CNN             |               | 17.205%     |             |
+| SVM             |  8.255%       | 14.497%     | 14.430%     |
+| CNN             |               | 14.027%     |             |
 | GRU             |               |             |             |
 | GRU + Attention |               |             |             |
 

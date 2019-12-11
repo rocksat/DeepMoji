@@ -11,6 +11,8 @@ import numpy as np
 import argparse
 import os
 import sklearn.model_selection as model_selection
+from sklearn.metrics import plot_confusion_matrix
+from matplotlib import pyplot as plt
 
 # customized library
 from util import load_glove_model
@@ -45,12 +47,11 @@ def parse_args():
                         default='glove-50',
                         choices=['glove-50', 'glove-300', 'bert'],
                         help='word embedding [glove-50, glove-300, bert]')
-
-    parser.add_argument('--save_path',
-                        '-s',
+    parser.add_argument('--out_path',
+                        '-o',
                         type=str,
-                        default='../models',
-                        help='path to save trained model')
+                        default='../artifact',
+                        help='path to save trained model and word dictionary')
     return parser.parse_args()
 
 
@@ -67,12 +68,13 @@ def main(args):
 
     # step 3: word embedding
     if args.word_embedding == 'glove-50':
-        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.50d.txt')
+        glove_6_b_50_d_path = os.path.join(args.out_path,
+                                           'pretrain_models/glove.6B.50d.txt')
         word_embedding = load_glove_model(glove_6_b_50_d_path)
         embedding_dim = 50
     elif args.word_embedding == 'glove3-00':
-        glove_6_b_300_d_path = os.path.join(args.save_path,
-                                            'glove.6B.300d.txt')
+        glove_6_b_300_d_path = os.path.join(
+            args.out_path, 'pretrain_models/glove.6B.300d.txt')
         word_embedding = load_glove_model(glove_6_b_300_d_path)
         embedding_dim = 300
     else:
@@ -91,11 +93,18 @@ def main(args):
         NotImplementedError('not implemented yet')
 
     X_train, y_train = clf.data_preproccess(messages_train, labels_train)
-    clf.fit(X_train, y_train)
+    clf.fit(X_train, y_train, epochs=1)
+    model_file = os.path.join(
+        args.out_path, 'models/{}_{}.pkl'.format(args.word_embedding,
+                                                 args.classifier))
+    clf.save(model_file)
 
     # step 5: evaluate on test set
     X_test, y_test = clf.data_preproccess(messages_test, labels_test)
-    clf.score(X_test, y_test)
+    scores = clf.score(X_test, y_test)
+    print("%s classifier %s on %s is : %.3f%%" %
+          (args.classifier, clf.model.metrics_names[1], args.word_embedding,
+           scores[1] * 100))
 
 
 if __name__ == '__main__':

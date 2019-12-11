@@ -51,11 +51,10 @@ def parse_args():
                         default='bow',
                         choices=['bow', 'glove', 'word2vec'],
                         help='word embedding [bow, glove, word2vec]')
-
-    parser.add_argument('--save_path',
-                        '-s',
+    parser.add_argument('--out_path',
+                        '-o',
                         type=str,
-                        default='../models',
+                        default='../artifact',
                         help='path to save trained model and word dictionary')
     return parser.parse_args()
 
@@ -75,11 +74,13 @@ def main(args):
     if args.word_embedding == 'bow':
         vectorizer = ev.CountVectorizer(use_tfidf=True)
         vectorizer.fit(dataset.messages)
-        dictionary_file = os.path.join(args.save_path, 'word_dictionary.json')
+        dictionary_file = os.path.join(args.out_path,
+                                       'models/word_dictionary.json')
         write_json(dictionary_file, vectorizer.word_dictionary)
     elif args.word_embedding == 'glove':
         # load pre-trained glove model
-        glove_6_b_50_d_path = os.path.join(args.save_path, 'glove.6B.50d.txt')
+        glove_6_b_50_d_path = os.path.join(args.out_path,
+                                           'pretrain_models/glove.6B.50d.txt')
         glove_model = load_glove_model(glove_6_b_50_d_path)
         vectorizer = ev.MeanEmbeddingVectorizer(glove_model)
     # encoder labels
@@ -112,8 +113,8 @@ def main(args):
 
     clf.fit(X_train, y_train)
     model_file = os.path.join(
-        args.save_path, '{}_{}.pkl'.format(args.word_embedding,
-                                           args.classifier))
+        args.out_path, 'models/{}_{}.pkl'.format(args.word_embedding,
+                                                 args.classifier))
     pickle.dump(clf, open(model_file, 'wb'))
 
     # step 5: evaluate on test set
@@ -134,8 +135,8 @@ def main(args):
     disp.ax_.set_title('{}_{} confusion matrix'.format(args.word_embedding,
                                                        args.classifier))
     figure_file = os.path.join(
-        args.save_path, '{}_{}.png'.format(args.word_embedding,
-                                           args.classifier))
+        args.out_path, 'figure/{}_{}.png'.format(args.word_embedding,
+                                                 args.classifier))
     plt.savefig(figure_file)
 
 
