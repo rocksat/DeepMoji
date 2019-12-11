@@ -60,7 +60,7 @@ def parse_args():
 
 def main(args):
     # step 1: load dataset
-    dataset = TextDataset(args.dataset)
+    dataset = TextDataset(args.dataset, max_messages=50000)
 
     # step 2: train / test split
     messages_train, messages_test, labels_train, labels_test = model_selection.train_test_split(

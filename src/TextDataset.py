@@ -6,7 +6,7 @@ import util
 
 
 class TextDataset(Dataset):
-    def __init__(self, txt_file, max_messages=50000):
+    def __init__(self, txt_file, max_messages=None):
         """
         Args:
             txt_file (string): Path to the text file with sentences and emoji labels
@@ -19,7 +19,9 @@ class TextDataset(Dataset):
             total_messages = len(self.messages)
             shuffle_index = np.arange(total_messages)
             np.random.shuffle(shuffle_index)
-            self.messages = [self.messages[i] for i in shuffle_index[:max_messages]]
+            self.messages = [
+                self.messages[i] for i in shuffle_index[:max_messages]
+            ]
             self.labels = self.labels[shuffle_index[:max_messages]]
 
     def filter(self, occurrence=500):
