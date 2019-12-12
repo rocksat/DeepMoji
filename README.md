@@ -35,7 +35,7 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 |-----------------|---------------|-------------|-------------|-------------|
 | Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
 | SVM             |  8.255%       | 14.497%     | 14.430%     |
-| CNN             |               | 14.027%     |             |
+| CNN             |               | 14.765%     |             |
 | GRU             |               |             |             |
 | GRU + Attention |               |             |             |
 

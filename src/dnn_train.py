@@ -40,7 +40,7 @@ def parse_args():
     parser.add_argument('--classifier',
                         '-c',
                         type=str,
-                        default='cnn',
+                        default='lstm',
                         choices=['cnn', 'lstm', 'gru'],
                         help='classifier type [cnn, lstm, gru]')
     parser.add_argument('--word_embedding',
@@ -90,7 +90,12 @@ def main(args):
                             word_embedding=word_embedding,
                             embedding_dim=embedding_dim)
     elif args.classifier == 'lstm':
-        NotImplementedError('not implemented yet')
+        from LSTMClassifier import LSTMClassifier
+        clf = LSTMClassifier(messages=dataset.messages,
+                             labels=dataset.labels,
+                             word_embedding=word_embedding,
+                             embedding_dim=embedding_dim,
+                             lstm_output_size=70)
     else:
         NotImplementedError('not implemented yet')
 
