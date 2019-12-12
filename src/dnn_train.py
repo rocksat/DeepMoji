@@ -95,7 +95,8 @@ def main(args):
                              labels=dataset.labels,
                              word_embedding=word_embedding,
                              embedding_dim=embedding_dim,
-                             lstm_output_size=70)
+                             lstm_output_size=100,
+                             use_attention_layer=True)
     else:
         NotImplementedError('not implemented yet')
 

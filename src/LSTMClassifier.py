@@ -8,6 +8,7 @@ from keras.layers import Conv1D, MaxPooling1D
 from keras.models import Model
 
 from BaseClassifier import BaseClassifier
+from AttentionLayer import AttentionLayer
 
 
 class LSTMClassifier(BaseClassifier):
@@ -18,7 +19,8 @@ class LSTMClassifier(BaseClassifier):
                  max_sequence_length=1000,
                  max_num_words=20000,
                  embedding_dim=100,
-                 lstm_output_size=70):
+                 lstm_output_size=70,
+                 use_attention_layer=False):
         # initialize base class
         super(LSTMClassifier,
               self).__init__(messages=messages,
@@ -36,6 +38,8 @@ class LSTMClassifier(BaseClassifier):
         x = Conv1D(128, 5, activation='relu')(x)
         x = MaxPooling1D(5)(x)
         x = Bidirectional(LSTM(lstm_output_size))(x)
+        if use_attention_layer:
+            x = AttentionLayer()(x)
         preds = Dense(len(self.le.classes_), activation='softmax')(x)
 
         self.model = Model(sequence_input, preds)
