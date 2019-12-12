@@ -7,6 +7,7 @@ from keras.layers import LSTM, Bidirectional
 from keras.layers import Conv1D, MaxPooling1D
 from keras.layers import BatchNormalization
 from keras.models import Model
+from keras import regularizers
 
 from BaseClassifier import BaseClassifier
 from AttentionLayer import AttentionLayer
@@ -34,13 +35,22 @@ class LSTMClassifier(BaseClassifier):
         # initialize model
         sequence_input = Input(shape=(max_sequence_length, ), dtype='int32')
         embedding_sequence = self.embedding_layer(sequence_input)
-        x = Conv1D(128, 5, activation='relu')(embedding_sequence)
+        x = Conv1D(
+            128,
+            5,
+            activation='relu',
+            kernel_regularizer=regularizers.l2(0.001))(embedding_sequence)
         x = BatchNormalization()(x)
         x = MaxPooling1D(5)(x)
-        x = Conv1D(128, 5, activation='relu')(x)
+        x = Conv1D(128,
+                   5,
+                   activation='relu',
+                   kernel_regularizer=regularizers.l2(0.001))(x)
         x = BatchNormalization()(x)
         x = MaxPooling1D(5)(x)
-        x = Bidirectional(LSTM(lstm_output_size))(x)
+        x = Bidirectional(
+            LSTM(lstm_output_size,
+                 kernel_regularizer=regularizers.l2(0.001)))(x)
         if use_attention_layer:
             x = AttentionLayer()(x)
         preds = Dense(len(self.le.classes_), activation='softmax')(x)
