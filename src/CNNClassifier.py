@@ -1,7 +1,7 @@
 # CNN classifier for text
 
 from keras.layers import Dense, Input, GlobalMaxPooling1D
-from keras.layers import Conv1D, MaxPooling1D
+from keras.layers import Conv1D, MaxPooling1D, Dropout
 from keras.models import Model
 
 from BaseClassifier import BaseClassifier
@@ -34,6 +34,7 @@ class CNNClassifier(BaseClassifier):
         x = MaxPooling1D(5)(x)
         x = Conv1D(128, 5, activation='relu')(x)
         x = GlobalMaxPooling1D()(x)
+        x = Dropout(0.5)(x)
         x = Dense(128, activation='relu')(x)
         preds = Dense(len(self.le.classes_), activation='softmax')(x)
 

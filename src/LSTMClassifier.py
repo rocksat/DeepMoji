@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from keras.layers import Dense, Input
+from keras.layers import Dense, Input, Dropout
 from keras.layers import LSTM, Bidirectional
 from keras.layers import Conv1D, MaxPooling1D
 from keras.models import Model
@@ -38,6 +38,7 @@ class LSTMClassifier(BaseClassifier):
         x = Conv1D(128, 5, activation='relu')(x)
         x = MaxPooling1D(5)(x)
         x = Bidirectional(LSTM(lstm_output_size))(x)
+        x = Dropout(0.5)(x)
         if use_attention_layer:
             x = AttentionLayer()(x)
         preds = Dense(len(self.le.classes_), activation='softmax')(x)

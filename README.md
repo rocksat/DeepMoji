@@ -24,6 +24,15 @@ foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -o art
 ```console
 foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c cnn -w glove-50 -o artifact
 ```
+- train deep CNN-LSTM classifier with GLoVe-50d word embedding
+```console
+foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c lstm -w glove-50 -o artifact
+```
+- train deep CNN-GRU classifier with GLoVe-50d word embedding
+```console
+foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c gru -w glove-50 -o artifact
+```
+
 
 ### Predict:
 ```console
@@ -36,8 +45,8 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 | Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
 | SVM             |  8.255%       | 14.497%     | 14.430%     |
 | CNN             |               | 14.765%     | 15.638%     |
-| GRU             |               |             |             |
-| GRU + Attention |               |             |             |
+| LSTM            |               | 14.295%     |             |
+| LSTM + Attention|               |             |             |
 
 
 ### To-do List

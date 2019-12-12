@@ -96,9 +96,15 @@ def main(args):
                              word_embedding=word_embedding,
                              embedding_dim=embedding_dim,
                              lstm_output_size=100,
-                             use_attention_layer=True)
+                             use_attention_layer=False)
     else:
-        NotImplementedError('not implemented yet')
+        from GRUClassifier import GRUClassifier
+        clf = GRUClassifier(messages=dataset.messages,
+                            labels=dataset.labels,
+                            word_embedding=word_embedding,
+                            embedding_dim=embedding_dim,
+                            gru_output_size=100,
+                            use_attention_layer=False)
 
     X_train, y_train = clf.data_preproccess(messages_train, labels_train)
     clf.fit(X_train, y_train, epochs=10)
