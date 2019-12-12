@@ -15,6 +15,7 @@ from sklearn.preprocessing import LabelEncoder
 
 
 class BaseClassifier(object):
+
     def __init__(self,
                  messages,
                  labels,

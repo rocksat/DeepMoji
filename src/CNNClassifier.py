@@ -10,6 +10,7 @@ from BaseClassifier import BaseClassifier
 
 
 class CNNClassifier(BaseClassifier):
+
     def __init__(self,
                  messages,
                  labels,
@@ -28,7 +29,7 @@ class CNNClassifier(BaseClassifier):
                              embedding_dim=embedding_dim)
 
         # 1D convnet withh global maxpooling
-        sequence_input = Input(shape=(max_sequence_length, ), dtype='int32')
+        sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
         embedding_sequence = self.embedding_layer(sequence_input)
         x = Conv1D(
             128,

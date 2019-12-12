@@ -35,6 +35,7 @@ def get_words(message):
 
 
 class CountVectorizer(object):
+
     def __init__(self, use_tfidf=True):
         self.word_dictionary = {}
         self.use_tfidf = use_tfidf
@@ -87,8 +88,8 @@ class CountVectorizer(object):
             np.sum(text_matrix, axis=1, keepdims=True) + np.finfo('d').eps)
 
         # compute idf
-        idf = n / (np.sum((text_matrix > 0.5) * 1, axis=0, keepdims=True) +
-                   np.finfo('d').eps)
+        idf = n / (np.sum(
+            (text_matrix > 0.5) * 1, axis=0, keepdims=True) + np.finfo('d').eps)
         text_tfidf_matrix = text_tf_matrix * np.log(idf)
 
         return text_tfidf_matrix
@@ -137,6 +138,7 @@ class CountVectorizer(object):
 
 
 class MeanEmbeddingVectorizer(object):
+
     def __init__(self, word2vec):
         self.word2vec = word2vec
         if len(word2vec) > 0:
@@ -150,14 +152,14 @@ class MeanEmbeddingVectorizer(object):
     def transform(self, X):
         return np.array([
             np.mean([
-                self.word2vec[w]
-                for w in get_words(words) if w in self.word2vec
+                self.word2vec[w] for w in get_words(words) if w in self.word2vec
             ] or [np.zeros(self.dim)],
                     axis=0) for words in X
         ])
 
 
 class TfidfEmbeddingVectorizer(object):
+
     def __init__(self, word2vec):
         self.word2vec = word2vec
         self.word2weight = None
@@ -175,9 +177,9 @@ class TfidfEmbeddingVectorizer(object):
         # as any of the known words - so the default idf is the max of
         # known idf's
         max_idf = max(tfidf.idf_)
-        self.word2weight = defaultdict(lambda: max_idf,
-                                       [(w, tfidf.idf_[i])
-                                        for w, i in tfidf.vocabulary_.items()])
+        self.word2weight = defaultdict(
+            lambda: max_idf,
+            [(w, tfidf.idf_[i]) for w, i in tfidf.vocabulary_.items()])
 
         return self
 
@@ -185,7 +187,9 @@ class TfidfEmbeddingVectorizer(object):
         return np.array([
             np.mean([
                 self.word2vec[w] * self.word2weight[w]
-                for w in get_words(words) if w in self.word2vec
+                for w in get_words(words)
+                if w in self.word2vec
             ] or [np.zeros(self.dim)],
-                    axis=0) for words in X
+                    axis=0)
+            for words in X
         ])

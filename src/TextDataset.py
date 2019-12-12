@@ -6,6 +6,7 @@ import util
 
 
 class TextDataset(Dataset):
+
     def __init__(self,
                  txt_file,
                  occurrence,

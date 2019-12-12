@@ -4,13 +4,14 @@ from keras import initializers
 
 
 class AttentionLayer(Layer):
+
     def __init__(self, **kwargs):
         self.init = initializers.get('normal')
         super(AttentionLayer, self).__init__(**kwargs)
 
     def build(self, input_shape):
         assert len(input_shape) == 3
-        self.W = self.init((input_shape[-1], ))
+        self.W = self.init((input_shape[-1],))
         self.trainable_weights = [self.W]
         super(AttentionLayer, self).build(input_shape)
 

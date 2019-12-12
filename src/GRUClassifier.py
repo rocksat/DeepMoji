@@ -14,6 +14,7 @@ from AttentionLayer import AttentionLayer
 
 
 class GRUClassifier(BaseClassifier):
+
     def __init__(self,
                  messages,
                  labels,
@@ -33,7 +34,7 @@ class GRUClassifier(BaseClassifier):
                              embedding_dim=embedding_dim)
 
         # initialize model
-        sequence_input = Input(shape=(max_sequence_length, ), dtype='int32')
+        sequence_input = Input(shape=(max_sequence_length,), dtype='int32')
         embedding_sequence = self.embedding_layer(sequence_input)
         x = Conv1D(
             128,
