@@ -12,27 +12,14 @@ foo@bar:~$ python -m nltk.downloader all
 ```
 
 ### Train:
-- train Naive Bayes classifier with BoW + TF-IDF word embedding
+- train [NB / SVM] classifier with [bow / GLoVe] word embedding
 ```console
-foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c nb -w bow -o artifact
+foo@bar:~$ python src/train.py -d $DATAST_PATH -t $TEST_RATIO -c $CLASSFIER_TYPE -w $WORD_EMBEDDING_TYPE -o $ARTIFACT
 ```
-- train SVM classifier with GLoVe-50d word embedding
+- train [CNN / LSTM / GRU] classifier with [GLoVe-50d / GLoVe-300d / BERT] word embedding
 ```console
-foo@bar:~$ python src/train.py -d data/dataset.txt -t 0.1 -c svm -w glove -o artifact
+foo@bar:~$ python src/dnn_train.py -d $DATAST_PATH -t $TEST_RATIO -c $CLASSFIER_TYPE -w $WORD_EMBEDDING_TYPE -o $ARTIFACT
 ```
-- train deep CNN classifier with GLoVe-50d word embedding
-```console
-foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c cnn -w glove-50 -o artifact
-```
-- train deep CNN-LSTM classifier with GLoVe-50d word embedding
-```console
-foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c lstm -w glove-50 -o artifact
-```
-- train deep CNN-GRU classifier with GLoVe-50d word embedding
-```console
-foo@bar:~$ python src/dnn_train.py -d data/dataset.txt -t 0.1 -c gru -w glove-50 -o artifact
-```
-
 
 ### Predict:
 ```console
@@ -42,11 +29,11 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 ### Accuracy
 |  Word Embedding |  BoW + TF-IDF |  GLoVe-50d  | GLoVe-300d  |     BERT    |
 |-----------------|---------------|-------------|-------------|-------------|
-| Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
-| SVM             |  8.255%       | 14.497%     | 14.430%     |
-| CNN             |    N/A        | 14.765%     | 15.638%     |
-| LSTM            |    N/A        | 14.295%     |             |
-| LSTM + Attention|    N/A        |             |             |
+| Naive Bayes     |  19.530%      |     N/A     |   N/A       |     N/A     |
+| SVM             |  9.195%       | 16.376%     | 14.966%     |             |
+| CNN             |    N/A        | 15.168%     | 15.906%     |             |
+| LSTM            |    N/A        | 15.705%     | 15.570%     |             |
+| LSTM + Attention|    N/A        |             |             |             |
 
 
 ### To-do List

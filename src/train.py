@@ -136,7 +136,7 @@ def main(args):
     disp.ax_.set_title('{} {} confusion matrix'.format(args.word_embedding,
                                                        args.classifier))
     figure_file = os.path.join(
-        args.out_path, 'figure/{}_{}.png'.format(args.word_embedding,
+        args.out_path, 'figure/{} {}.png'.format(args.word_embedding,
                                                  args.classifier))
     plt.savefig(figure_file)
 
