@@ -2,6 +2,7 @@
 
 from keras.layers import Dense, Input, GlobalMaxPooling1D
 from keras.layers import Conv1D, MaxPooling1D, Dropout
+from keras.layers import BatchNormalization
 from keras.models import Model
 
 from BaseClassifier import BaseClassifier
@@ -29,12 +30,14 @@ class CNNClassifier(BaseClassifier):
         sequence_input = Input(shape=(max_sequence_length, ), dtype='int32')
         embedding_sequence = self.embedding_layer(sequence_input)
         x = Conv1D(128, 5, activation='relu')(embedding_sequence)
+        x = BatchNormalization()(x)
         x = MaxPooling1D(5)(x)
         x = Conv1D(128, 5, activation='relu')(x)
+        x = BatchNormalization()(x)
         x = MaxPooling1D(5)(x)
         x = Conv1D(128, 5, activation='relu')(x)
+        x = BatchNormalization()(x)
         x = GlobalMaxPooling1D()(x)
-        x = Dropout(0.5)(x)
         x = Dense(128, activation='relu')(x)
         preds = Dense(len(self.le.classes_), activation='softmax')(x)
 

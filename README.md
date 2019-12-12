@@ -44,11 +44,11 @@ foo@bar:~$ python src/predict.py -m models/nb.pkl -d models/word_dictionary.json
 |-----------------|---------------|-------------|-------------|-------------|
 | Naive Bayes     |  20.134%      |     N/A     |   N/A       |     N/A     |
 | SVM             |  8.255%       | 14.497%     | 14.430%     |
-| CNN             |               | 14.765%     | 15.638%     |
-| LSTM            |               | 14.295%     |             |
-| LSTM + Attention|               |             |             |
+| CNN             |    N/A        | 14.765%     | 15.638%     |
+| LSTM            |    N/A        | 14.295%     |             |
+| LSTM + Attention|    N/A        |             |             |
 
 
 ### To-do List
-- [X] textCNN with pre-trained GLoVe
-- [X] textCNN with pre-trained BERT
+- [ ] implement BERT as word-embedding
+- [ ] implement attention mechanism
